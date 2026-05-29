@@ -1,0 +1,10 @@
+{
+    "العقل العام (الافتراضي)": {
+        "db_filename": "ontology.db",
+        "mode": "active"
+    },
+    "تيست": {
+        "db_filename": "ontology_597c57c6.db",
+        "mode": "active"
+    }
+}

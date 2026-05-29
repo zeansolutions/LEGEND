@@ -1,0 +1,21 @@
+# 🪐 LEGEND Neuro-Symbolic Cognitive Assistant - Dependencies
+# Core Reasoning & Graphs
+networkx>=3.0
+numpy>=1.24.0
+
+# Database & HTTP Client
+requests>=2.31.0
+
+# API & Server Endpoints
+fastapi>=0.95.0
+pydantic>=2.0
+uvicorn>=0.22.0
+
+# Multimodal LLM Providers
+google-generativeai>=0.3.0
+llama-cpp-python>=0.2.75
+
+# Arabic Reshaping & BiDi Rendering (Tkinter Classic UI Support)
+arabic-reshaper>=3.0.0
+python-bidi>=0.4.2
+awesometkinter>=2.0.1
