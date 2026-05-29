@@ -180,6 +180,14 @@ class ArabicNeuroSymbolicPrototype:
                 "CREATE INDEX IF NOT EXISTS idx_concepts_super ON concepts(super_type)"
             )
 
+            # محاولة إضافة حقل السياق للنسخ القديمة من قاعدة البيانات
+            try:
+                cursor.execute(
+                    "ALTER TABLE triples ADD COLUMN context TEXT DEFAULT '{}'"
+                )
+            except Exception:
+                pass
+
             # محاولة إضافة حقول الزمن والثقة والأنطولوجيا الانفعالية للنسخ القديمة من قاعدة البيانات لمنع أخطاء الترقية
             try:
                 cursor.execute("ALTER TABLE triples ADD COLUMN valid_from INTEGER")
@@ -355,27 +363,35 @@ class ArabicNeuroSymbolicPrototype:
 
             try:
                 cursor.execute(
-                    "SELECT subject, predicate, object, valid_from, valid_to, confidence, emotional_valence, created_at, inferred FROM triples"
+                    "SELECT subject, predicate, object, valid_from, valid_to, confidence, emotional_valence, created_at, inferred, context FROM triples"
                 )
                 rows = cursor.fetchall()
             except sqlite3.OperationalError:
                 try:
                     cursor.execute(
-                        "SELECT subject, predicate, object, valid_from, valid_to, confidence, emotional_valence, created_at FROM triples"
+                        "SELECT subject, predicate, object, valid_from, valid_to, confidence, emotional_valence, created_at, inferred FROM triples"
                     )
-                    rows = [r + (0,) for r in cursor.fetchall()]
+                    rows = [r + ("{}",) for r in cursor.fetchall()]
                 except sqlite3.OperationalError:
                     try:
                         cursor.execute(
-                            "SELECT subject, predicate, object, valid_from, valid_to, confidence FROM triples"
+                            "SELECT subject, predicate, object, valid_from, valid_to, confidence, emotional_valence, created_at FROM triples"
                         )
-                        rows = [r + (0.0, None, 0) for r in cursor.fetchall()]
+                        rows = [r + (0, "{}") for r in cursor.fetchall()]
                     except sqlite3.OperationalError:
-                        cursor.execute("SELECT subject, predicate, object FROM triples")
-                        rows = [
-                            r + (None, None, 1.0, 0.0, None, 0)
-                            for r in cursor.fetchall()
-                        ]
+                        try:
+                            cursor.execute(
+                                "SELECT subject, predicate, object, valid_from, valid_to, confidence FROM triples"
+                            )
+                            rows = [r + (0.0, None, 0, "{}") for r in cursor.fetchall()]
+                        except sqlite3.OperationalError:
+                            cursor.execute(
+                                "SELECT subject, predicate, object FROM triples"
+                            )
+                            rows = [
+                                r + (None, None, 1.0, 0.0, None, 0, "{}")
+                                for r in cursor.fetchall()
+                            ]
 
             for (
                 subj,
@@ -387,6 +403,7 @@ class ArabicNeuroSymbolicPrototype:
                 emotional_valence,
                 created_at,
                 inferred,
+                context,
             ) in rows:
                 if confidence is None:
                     confidence = 1.0
@@ -394,6 +411,14 @@ class ArabicNeuroSymbolicPrototype:
                     emotional_valence = 0.0
                 if inferred is None:
                     inferred = 0
+                try:
+                    ctx = (
+                        json.loads(context)
+                        if isinstance(context, str)
+                        else (context or {})
+                    )
+                except Exception:
+                    ctx = {}
                 if not self.graph.has_node(subj):
                     self.graph.add_node(subj, type="instance")
                 if not self.graph.has_node(obj):
@@ -408,6 +433,7 @@ class ArabicNeuroSymbolicPrototype:
                     emotional_valence=emotional_valence,
                     created_at=created_at,
                     inferred=inferred,
+                    context=ctx,
                 )
 
             conn.close()
@@ -489,12 +515,14 @@ class ArabicNeuroSymbolicPrototype:
         confidence=1.0,
         emotional_valence=0.0,
         inferred=0,
+        context=None,
     ):
         subj = normalize_arabic(subj)
         pred = normalize_arabic(pred)
         obj = normalize_arabic(obj)
         if confidence is None:
             confidence = 1.0
+        ctx = context or {}
 
         graph_to_use = self.sandbox_graph if self.in_sandbox else self.graph
 
@@ -512,18 +540,21 @@ class ArabicNeuroSymbolicPrototype:
             emotional_valence=emotional_valence,
             created_at=int(time.time()),
             inferred=inferred,
+            context=ctx,
         )
 
         if self.in_sandbox:
             return
+
+        context_json = json.dumps(ctx, ensure_ascii=False)
 
         try:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
             cursor.execute(
                 """
-                INSERT OR REPLACE INTO triples (subject, predicate, object, valid_from, valid_to, confidence, emotional_valence, created_at, inferred)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT OR REPLACE INTO triples (subject, predicate, object, valid_from, valid_to, confidence, emotional_valence, created_at, inferred, context)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
                 (
                     subj,
@@ -535,6 +566,7 @@ class ArabicNeuroSymbolicPrototype:
                     emotional_valence,
                     int(time.time()),
                     inferred,
+                    context_json,
                 ),
             )
             conn.commit()
@@ -545,8 +577,8 @@ class ArabicNeuroSymbolicPrototype:
                 cursor = conn.cursor()
                 cursor.execute(
                     """
-                    INSERT OR REPLACE INTO triples (subject, predicate, object, valid_from, valid_to, confidence, emotional_valence, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    INSERT OR REPLACE INTO triples (subject, predicate, object, valid_from, valid_to, confidence, emotional_valence, created_at, inferred)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                     (
                         subj,
@@ -557,6 +589,7 @@ class ArabicNeuroSymbolicPrototype:
                         confidence,
                         emotional_valence,
                         int(time.time()),
+                        inferred,
                     ),
                 )
                 conn.commit()
@@ -567,15 +600,37 @@ class ArabicNeuroSymbolicPrototype:
                     cursor = conn.cursor()
                     cursor.execute(
                         """
-                        INSERT OR REPLACE INTO triples (subject, predicate, object, valid_from, valid_to) 
-                        VALUES (?, ?, ?, ?, ?)
+                        INSERT OR REPLACE INTO triples (subject, predicate, object, valid_from, valid_to, confidence, emotional_valence, created_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     """,
-                        (subj, pred, obj, valid_from, valid_to),
+                        (
+                            subj,
+                            pred,
+                            obj,
+                            valid_from,
+                            valid_to,
+                            confidence,
+                            emotional_valence,
+                            int(time.time()),
+                        ),
                     )
                     conn.commit()
                     conn.close()
-                except Exception as e:
-                    print(f" ⚠️ تعذر حفظ العلاقة ({subj} -> {pred} -> {obj}): {e}")
+                except sqlite3.OperationalError:
+                    try:
+                        conn = sqlite3.connect(self.db_path)
+                        cursor = conn.cursor()
+                        cursor.execute(
+                            """
+                            INSERT OR REPLACE INTO triples (subject, predicate, object, valid_from, valid_to) 
+                            VALUES (?, ?, ?, ?, ?)
+                        """,
+                            (subj, pred, obj, valid_from, valid_to),
+                        )
+                        conn.commit()
+                        conn.close()
+                    except Exception as e:
+                        print(f" ⚠️ تعذر حفظ العلاقة ({subj} -> {pred} -> {obj}): {e}")
         except Exception as e:
             print(f" ⚠️ تعذر حفظ العلاقة ({subj} -> {pred} -> {obj}): {e}")
 
@@ -1062,6 +1117,22 @@ These fields are OPTIONAL and help with entity deduplication.""",
             language, canonical_instruction["en"]
         )
 
+        context_instruction = {
+            "ar": """
+🔗 توجيه السياق الدلالي (Context-Bounded Relations):
+- لكل علاقة في "relations"، يمكن إضافة مفتاح "context" (سياق) يحدد الشروط أو الظروف التي تنطبق فيها هذه العلاقة فقط.
+- مثال: "اللمس يسبب حزناً إذا كان اللون أحمر" ➔ {"subject": "اللمس", "relation": "يسبب", "object": "حزن", "context": {"condition": "اللون = أحمر"}}
+- مثال: "اللمس يسبب فرحاً إذا كان اللون أزرق" ➔ {"subject": "اللمس", "relation": "يسبب", "object": "فرح", "context": {"condition": "اللون = أزرق"}}
+- يساعد هذا في تخزين علاقات متعددة لنفس الزوج (subject, object) بشروط مختلفة دون تناقض.""",
+            "en": """
+🔗 CONTEXT-BOUNDED RELATIONS (Semantic Context):
+- For each relation object, you MAY add a "context" key describing the conditions under which this relation holds true.
+- Example: "touching causes sadness if the color is red" ➔ {"subject": "touching", "relation": "causes", "object": "sadness", "context": {"condition": "color = red"}}
+- Example: "touching causes joy if the color is blue" ➔ {"subject": "touching", "relation": "causes", "object": "joy", "context": {"condition": "color = blue"}}
+- This allows storing multiple relations for the same (subject, object) pair under different conditions without contradiction.""",
+        }
+        context_suffix = context_instruction.get(language, context_instruction["en"])
+
         prompt = f"""{instr["role"]}
 {instr["task"]}
 
@@ -1076,6 +1147,7 @@ These fields are OPTIONAL and help with entity deduplication.""",
 
 {schema_instr}
 {canonical_suffix}
+{context_suffix}
 
 {instr["json_only"]}
 """
@@ -1131,6 +1203,18 @@ These fields are OPTIONAL and help with entity deduplication.""",
             if not subj or not pred or not obj:
                 continue
 
+            # استخراج السياق من العلاقة الجديدة
+            new_ctx = rel.get(
+                "context", rel.get("سياق", rel.get("condition", rel.get("شرط", {})))
+            )
+            if isinstance(new_ctx, str):
+                try:
+                    new_ctx = json.loads(new_ctx)
+                except Exception:
+                    new_ctx = {"condition": new_ctx}
+            if not isinstance(new_ctx, dict):
+                new_ctx = {}
+
             # إذا كنا نحاول إضافة علاقة إثبات ولدينا علاقة نفي، أو العكس
             if pred in categorization_preds:
                 for np in negation_preds:
@@ -1138,6 +1222,10 @@ These fields are OPTIONAL and help with entity deduplication.""",
                         self.graph.has_edge(subj, obj)
                         and self.graph[subj][obj].get("relation") == np
                     ):
+                        existing_ctx = self.graph[subj][obj].get("context", {})
+                        # إذا كان للعلاقتين سياقات مختلفة، فهما لا تتعارضان
+                        if new_ctx and existing_ctx and new_ctx != existing_ctx:
+                            continue
                         contradictions.append(
                             f"تلقين ({subj} ➔ {pred} ➔ {obj}) يتناقض مباشرة مع الحقيقة المسجلة السابقة: ({subj} ➔ {np} ➔ {obj})"
                         )
@@ -1147,6 +1235,10 @@ These fields are OPTIONAL and help with entity deduplication.""",
                         self.graph.has_edge(subj, obj)
                         and self.graph[subj][obj].get("relation") == pp
                     ):
+                        existing_ctx = self.graph[subj][obj].get("context", {})
+                        # إذا كان للعلاقتين سياقات مختلفة، فهما لا تتعارضان
+                        if new_ctx and existing_ctx and new_ctx != existing_ctx:
+                            continue
                         contradictions.append(
                             f"تلقين ({subj} ➔ {pred} ➔ {obj}) يتناقض مباشرة مع الحقيقة المسجلة السابقة: ({subj} ➔ {pp} ➔ {obj})"
                         )
@@ -1526,6 +1618,17 @@ These fields are OPTIONAL and help with entity deduplication.""",
             valid_to = rel.get("valid_to")
             conf = rel.get("confidence", 1.0)
 
+            ctx = rel.get(
+                "context", rel.get("سياق", rel.get("condition", rel.get("شرط", {})))
+            )
+            if isinstance(ctx, str):
+                try:
+                    ctx = json.loads(ctx)
+                except Exception:
+                    ctx = {"condition": ctx}
+            elif not isinstance(ctx, dict):
+                ctx = {}
+
             if not subj or not pred or not obj:
                 continue
 
@@ -1606,8 +1709,12 @@ These fields are OPTIONAL and help with entity deduplication.""",
                 elif valid_to:
                     time_info = f" [🕒 حتى {valid_to}]"
 
+                ctx_log = ""
+                if ctx and any(v for v in ctx.values()):
+                    ctx_str = json.dumps(ctx, ensure_ascii=False)[:80]
+                    ctx_log = f" [🌐 سياق: {ctx_str}]"
                 logs.append(
-                    f"🧠 [تعلم تراكمي]: استيعاب حقيقة جديدة: ({subj} ➔ {pred} ➔ {obj}){time_info} بـثقة {conf:.2f}"
+                    f"🧠 [تعلم تراكمي]: استيعاب حقيقة جديدة: ({subj} ➔ {pred} ➔ {obj}){time_info}{ctx_log} بـثقة {conf:.2f}"
                 )
                 self.save_triple_to_db(
                     subj,
@@ -1617,6 +1724,7 @@ These fields are OPTIONAL and help with entity deduplication.""",
                     valid_to,
                     confidence=conf,
                     emotional_valence=valence,
+                    context=ctx,
                 )
                 has_learned = True
 
@@ -1852,7 +1960,14 @@ Return ONLY the words separated by spaces, no other text."""
 
         for subj, pred, obj in triples:
             if subj in expanded_nodes or obj in expanded_nodes:
-                relevant_triples.append(f"Fact: '{subj}' ➔ '{pred}' ➔ '{obj}'")
+                ctx = ""
+                if self.graph.has_edge(subj, obj) and self.graph[subj][obj].get(
+                    "context"
+                ):
+                    edge_ctx = self.graph[subj][obj]["context"]
+                    if isinstance(edge_ctx, dict) and any(v for v in edge_ctx.values()):
+                        ctx = f" [Context: {json.dumps(edge_ctx, ensure_ascii=False)}]"
+                relevant_triples.append(f"Fact: '{subj}' ➔ '{pred}' ➔ '{obj}'{ctx}")
 
         facts = relevant_concepts + relevant_triples
 
@@ -1992,6 +2107,39 @@ Regras: 1. Dê uma resposta em linguagem natural. 2. Cumpra rigorosamente os fat
         prompt = rag_prompts.get(language, rag_prompts["en"])
         logs.append("🤔 Generating fact-based response...")
         return call_llm_api(provider, api_key, model, prompt, logs)
+
+    def query_with_context(
+        self,
+        subject=None,
+        predicate=None,
+        object=None,
+        context_filter=None,
+        include_no_context=True,
+    ):
+        """
+        استعلام عن العلاقات مع مراعاة السياق.
+        - context_filter: dict of conditions that must match (e.g. {"condition": "اللون = أحمر"})
+        - include_no_context: if True, also include relations without context
+        Returns list of (subj, pred, obj, context) matching the query.
+        """
+        results = []
+        for u, v, data in self.graph.edges(data=True):
+            relation = data.get("relation", "")
+            ctx = data.get("context", {})
+
+            if subject and normalize_arabic(u) != normalize_arabic(subject):
+                continue
+            if predicate and normalize_arabic(relation) != normalize_arabic(predicate):
+                continue
+            if object and normalize_arabic(v) != normalize_arabic(object):
+                continue
+            if context_filter:
+                ctx_matches = all(ctx.get(k) == v for k, v in context_filter.items())
+                if not ctx_matches:
+                    if not (include_no_context and not ctx):
+                        continue
+            results.append((u, relation, v, ctx))
+        return results
 
     def find_relation_path_string(self, concept_a, concept_b, logs=None):
         if logs is None:
