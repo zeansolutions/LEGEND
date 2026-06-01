@@ -26,9 +26,70 @@
 
 ## 📖 Overview
 
-**LEGEND** is a groundbreaking **Neuro-Symbolic AI Platform** that merges the flexible natural language understanding of Connectionist Neural Networks (LLMs) with the absolute precision and mathematical safety of Symbolic Logic (Graph Ontologies). Specially engineered for Arabic knowledge representation, LEGEND operates with **zero hallucination**, providing a self-evolving cognitive database that reasons, queries, and refines its own logic.
+**LEGEND** is a pioneering **Neuro-Symbolic AI Platform** that merges the flexible natural language understanding of Connectionist Neural Networks (LLMs) with the absolute precision and mathematical safety of Symbolic Logic (Graph Ontologies). Specially engineered for Arabic knowledge representation, LEGEND operates with **zero hallucination**, providing a self-evolving cognitive database that reasons, queries, and refines its own logic.
 
-Built with a gorgeous, high-fidelity cyber-aesthetic **React + Electron desktop suite** and a robust **FastAPI + NetworkX backend**, LEGEND delivers an interactive sandbox where users can explore, challenge, and shape AI cognitive structures in real-time.
+Built with a high-fidelity cyber-aesthetic **React + Electron desktop suite** and a robust **FastAPI + NetworkX backend**, LEGEND delivers an interactive sandbox where users can explore, challenge, and shape AI cognitive structures in real-time.
+
+---
+
+## 📸 Interface & Terminal Showroom
+
+Below is a visual overview of the LEGEND workspace, showcasing the React-Electron graphical desktop suite and the cyberpunk interactive CLI terminal.
+
+<p align="center">
+  <table align="center" width="100%">
+    <tr>
+      <td width="50%" align="center" valign="top">
+        <img src="images/1.jpg" width="100%" style="border-radius: 8px; border: 1px solid #30363d;" />
+        <br /><strong>1. Glassmorphism Desktop Dashboard</strong>
+      </td>
+      <td width="50%" align="center" valign="top">
+        <img src="images/2.jpg" width="100%" style="border-radius: 8px; border: 1px solid #30363d;" />
+        <br /><strong>2. Interactive Knowledge Graph Visualizer</strong>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%" align="center" valign="top">
+        <img src="images/3.jpg" width="100%" style="border-radius: 8px; border: 1px solid #30363d;" />
+        <br /><strong>3. Socratic Self-Doubt Dialogues & Debates</strong>
+      </td>
+      <td width="50%" align="center" valign="top">
+        <img src="images/4.jpg" width="100%" style="border-radius: 8px; border: 1px solid #30363d;" />
+        <br /><strong>4. Cognitive Procedural Routing & Steps</strong>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%" align="center" valign="top">
+        <img src="images/5.jpg" width="100%" style="border-radius: 8px; border: 1px solid #30363d;" />
+        <br /><strong>5. Cyberpunk Command Center CLI</strong>
+      </td>
+      <td width="50%" align="center" valign="top">
+        <img src="images/6.jpg" width="100%" style="border-radius: 8px; border: 1px solid #30363d;" />
+        <br /><strong>6. Passive Bulk Text Ingestion Sandbox</strong>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%" align="center" valign="top">
+        <img src="images/7.jpg" width="100%" style="border-radius: 8px; border: 1px solid #30363d;" />
+        <br /><strong>7. Real-Time Telemetry & Floating Status Bar</strong>
+      </td>
+      <td width="50%" align="center" valign="top">
+        <img src="images/8.jpg" width="100%" style="border-radius: 8px; border: 1px solid #30363d;" />
+        <br /><strong>8. Multi-Model Settings & Local GGUF Discovery</strong>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%" align="center" valign="top">
+        <img src="images/9.jpg" width="100%" style="border-radius: 8px; border: 1px solid #30363d;" />
+        <br /><strong>9. Semantic Wikidata Concept Alignment</strong>
+      </td>
+      <td width="50%" align="center" valign="top">
+        <img src="images/10.jpg" width="100%" style="border-radius: 8px; border: 1px solid #30363d;" />
+        <br /><strong>10. Geopolitical Causality Impact Prediction</strong>
+      </td>
+    </tr>
+  </table>
+</p>
 
 ---
 
@@ -48,10 +109,10 @@ graph TD
 
 ---
 
-## 🚀 Key Architectural Pillars
+## 🚀 Key Architectural Pillars & Features
 
 ### 🧠 1. Neuro-Symbolic Fusion (Zero-Hallucination AI)
-* **LLM Parser (The Neural Brain):** Parses flexible, rich Arabic sentences using Google Gemini, Groq, OpenRouter, or **Local GGUF Models** into semantic logical triples (Subject-Predicate-Object).
+* **LLM Parser (The Neural Brain):** Parses flexible, rich Arabic sentences using Google Gemini, Groq, OpenRouter, or **Local GGUF Models** into semantic logical triples (Subject-Predicate-Object) alongside emotional and modal metadata.
 * **Ontology Graph (The Symbolic Core):** Stores knowledge in a persistent, queryable SQLite database, completely insulating the system from language model fabrications.
 
 ### 🔌 2. Native Local Model (llama.cpp & GGUF) Support
@@ -77,21 +138,17 @@ graph TD
 * **Genetic Rules Evolution:** Employs genetic algorithms (Crossover & Mutation) to breed, evolve, and survive the most logical reasoning axioms over time.
 * **Thought Experiment Sandbox:** Simulates counterfactual hypotheses (e.g., *"What if iron floats on water?"*) in isolated RAM-based virtual worlds without corrupting the stable core memory.
 * **Passive Bulk Absorption:** Streamlines passive knowledge acquisition from large books or articles, screening out facts that conflict with pre-established logical truths.
+* **Self-Curiosity (Active Curiosity):** Triggers self-directed knowledge exploration, actively generating targeted queries to fill structural gaps in the ontology.
+* **Emotional Valence Engine:** Attributes emotional memory valence (e.g., positive, neutral, negative mood weight) to concepts, influencing cognitive consolidation.
+* **Cognitive Sleep Cycle:** Triggers periodic cognitive consolidation, running network pruning, memory cleaning, and confidence adjustments during simulated sleep.
 
-### 📡 7. Dynamic Live Model Integration
-* Fetches the complete, real-time catalog from **OpenRouter** dynamically, automatically sorting and displaying new model releases.
-* Visually separates **Free Models (Green Heart 💚)** from **Paid Models (Gem 💎)** using native dropdown groupings for budget-conscious workflows.
-
-### 🔒 8. Zero-Key Security (GitHub Safe)
-* Implements a local key storage system managed solely inside your browser's `localStorage`. No keys are ever hardcoded in backend scripts or frontend source code, making the repository completely safe to clone and publish.
-
-### 🌐 9. Persistent Global vs. Local Cognitive Procedures
+### 🌐 7. Persistent Global vs. Local Cognitive Procedures
 * **Procedural Database Routing:** Supports the creation of both **Local** and **Global** cognitive execution steps:
   * **Local Procedures:** Bound to a single workspace's SQLite ontology. Perfect for domain-specific logical sequences (e.g., a specific logic grid problem). Wiped clean during a brain reset (`تصفير العقل`).
   * **Global Procedures:** Stored in a persistent, shared database `global_procedures.db`. Shared dynamically across all workspaces and completely immune to local brain resets, allowing universal cognitive algorithms (like *Tafkeer Esteb'aady* or Exclusion reasoning) to persist.
 * **Interactive Concept Guide (Concept Card 7):** Integrates an automated one-click copy button for the unified `COGNITIVE_PROMPT`. This prompt guides any neural LLM to analyze complex riddles and output complete logical steps in native JSON for immediate insertion into the system.
 
-### ⏱️ 10. Real-Time Cognitive Progress Tracker (Visual Engine)
+### ⏱️ 8. Real-Time Cognitive Progress Tracker (Visual Engine)
 * **Thread-Safe Telemetry Engine:** Utilizes an integrated, thread-safe asynchronous telemetry system in `api.py` (`/api/status/current`) protected by a `threading.Lock`.
 * **Multi-Stage Real-Time Diagnostics:** Monitors active logical processes (including Passive Text Absorption, RAG Reasoning queries, Active Knowledge Ingestion, and Socratic dialogues) stage-by-stage.
 * **Cyber-Aesthetic Floating Glassmorphic Status Bar:** Renders a gorgeous, glowing visual panel at the bottom right during processing, displaying:
@@ -99,6 +156,44 @@ graph TD
   * Ingestion fractions (e.g., *Ingesting sentence 3 of 10*) and percentage meters.
   * A pulsing, gradient neon progress bar (`cyan` to `blue`).
   * An accurate running elapsed time stopwatch (e.g., `⏱️ 4.2s`) updating continuously in real-time.
+* **Asynchronous Process Abort:** Enables safe, instantaneous user cancellation of heavy operations via backend interruption signals.
+
+### 📡 9. Dynamic Live Model Integration
+* Fetches the complete, real-time catalog from **OpenRouter** dynamically, automatically sorting and displaying new model releases.
+* Visually separates **Free Models (Green Heart 💚)** from **Paid Models (Gem 💎)** using native dropdown groupings for budget-conscious workflows.
+
+### 🔒 10. Zero-Key Security (GitHub Safe)
+* Implements a local key storage system managed solely inside your browser's `localStorage`. No keys are ever hardcoded in backend scripts or frontend source code, making the repository completely safe to clone and publish.
+
+### 🌐 11. Distributed & External Alignment
+* **Federated Multi-Agent Cognitive Simulation:** Simulates multi-agent belief merging and network negotiation.
+* **Standard Semantic Exports:** Exposes `/api/workspace/export/rdf` (RDF/OWL) and `/api/workspace/export/jsonld` (JSON-LD) for standard semantic web compatibility.
+* **Wikidata Concept Alignment:** Auto-aligns nodes with Wikidata Q-codes to enrich local knowledge using DBpedia data.
+* **Causality Impact Prediction:** Triggers causality path searches to simulate future impact chains (e.g., environmental or geopolitical sequences of `يؤدي_إلى`).
+
+---
+
+## 📂 Project Directory Structure
+
+```
+.
+├── api.py                           # Core FastAPI Server & HTTP REST Endpoints
+├── cognitive_engine.py              # Socratic debate, Genetic algorithms & Sleep cycle
+├── cognitive_procedure_prompt.md    # Unified JSON system prompt prompt
+├── core_utils.py                    # Thread-safe telemetry, translations & DB tools
+├── neuro_symbolic_engine.py          # Primary Knowledge Graph SQLite & NetworkX engine
+├── run_tests.py                     # CLI Testing framework
+├── start.sh                         # Master launching entry script
+├── requirements.txt                 # Backend Python package requirements
+├── cli/                             # Interactive Cyberpunk CLI Terminal Client
+│   ├── cli.py                       # CLI user interface & menus
+│   └── engine.py                    # CLI terminal communication layer
+├── desktop-gui/                     # Desktop Electron/React GUI Client
+│   ├── main.js                      # Electron main process entry
+│   ├── src/                         # React UI Frontend codebase
+│   └── package.json                 # Node.js dependencies
+└── images/                          # Visual Showroom application screenshots
+```
 
 ---
 
@@ -118,7 +213,7 @@ cd LEGEND
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install fastapi uvicorn networkx requests google-genai
+pip install -r requirements.txt
 ```
 
 ### 3. Install Frontend Dependencies & Compile
@@ -135,6 +230,37 @@ Simply execute the launch script:
 ./start.sh
 ```
 *The app will automatically launch in full screen, spawn the python API server in the background, and load your custom cyber-aesthetic interface.*
+
+---
+
+## 📡 Core API Reference
+
+LEGEND exposes a comprehensive list of REST endpoints to integrate its cognitive engine with external apps:
+
+### ⚙️ Workspace & Session
+* **`GET /api/workspaces`**: Lists all active local database workspaces.
+* **`POST /api/workspace/select`**: Changes the active SQLite workspace directory.
+* **`POST /api/workspace/add`**: Initializes a new SQLite database workspace.
+* **`POST /api/workspace/delete`**: Drops a workspace and deletes its files.
+
+### 🧠 Knowledge Ingestion & Queries
+* **`POST /api/learn`**: Active knowledge extraction and logical triple generation from natural text.
+* **`POST /api/absorb/text`**: Asynchronous bulk text parsing and contradictory fact filtration.
+* **`POST /api/query`**: Multi-hop RAG semantic query and graph traversal.
+
+### 🧪 Advanced Reasoning Suite
+* **`GET /api/metacognition`**: Performs cognitive diagnostic loop scans on the network.
+* **`POST /api/socratic/dialogue`**: Simulates philosophical self-examination debates.
+* **`POST /api/thought_experiment/run`**: Spawns isolated virtual memory graphs for counterfactual testing.
+* **`POST /api/rules/evolve`**: Evolves new reasoning axioms using genetic programming.
+* **`POST /api/sleep`**: Triggers cognitive consolidation, concept pruning, and sleep cycle.
+* **`GET /api/curiosity`**: Auto-generates knowledge gap queries.
+
+### 🌐 Semantic Web & Integrations
+* **`GET /api/workspace/export/rdf`**: Exports current ontology to RDF/OWL format.
+* **`GET /api/workspace/export/jsonld`**: Exports current ontology to JSON-LD format.
+* **`GET /api/wikidata/enrich`**: Maps active concepts against Wikidata Q-codes.
+* **`GET /api/workspace/predict-impact`**: Simulates forward-chaining causality path traversals.
 
 ---
 
